@@ -54,28 +54,31 @@ public class PersonService(ApplicationDbContext context) : IPersonService
         context.SaveChanges();
     }
 
-    public async Task<Person> Update(int id, Person person, CancellationToken ct)
+    public async Task<Person> Update(int id, UpdatePersonRequest request, CancellationToken ct)
     {
-        var existedperson = await context.Persons.FindAsync(id);
+        var person = await context.Persons.FindAsync(id , ct);
 
-        if (existedperson == null)
+     
+
+         context.Persons.Update(new Person 
         {
-            return null;
-        }
+         Name = request.Name,
+         LastName = request.LastName,
+         NationalIdentity = request.NationalIdentity ,
+         BirthDate = request.BirthDate
+         
+        });
 
-        existedperson.Name = person.Name;
-        existedperson.LastName = person.LastName;
-        existedperson.BirthDate = person.BirthDate;
-        existedperson.NationalIdentity = person.NationalIdentity;
-        context.Update(existedperson);
-        await context.SaveChangesAsync();
+        await  context.SaveChangesAsync();
+            
+            
 
         return person;
     }
 
     public async Task<Person> Delete(int id, CancellationToken ct)
     {
-        var person = await context.Persons.FirstOrDefaultAsync(p => p.PersonId == id);
+        var person = await context.Persons.FirstOrDefaultAsync(p => p.PersonId == id , ct);
 
         if (person == null)
         {
@@ -83,7 +86,7 @@ public class PersonService(ApplicationDbContext context) : IPersonService
         }
 
         context.Persons.Remove(person);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
 
         return person;
     }

@@ -38,12 +38,12 @@ public class PersonController(IPersonService personRep) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(int id, Person person, CancellationToken ct)
+    public async Task<IActionResult> Update(int id, UpdatePersonRequest Model, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var existperson =await personRep.Update(id, person,ct);
+        var existperson =await personRep.Update(id, Model,ct);
 
         if (existperson == null)
         {
