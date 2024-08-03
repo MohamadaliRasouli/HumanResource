@@ -1,4 +1,4 @@
-using API.BussinesLibrary;
+using API.BussinesLogic;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,14 +27,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-
-
 app.MapControllers();
 app.Run();
 

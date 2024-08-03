@@ -1,95 +1,64 @@
-using API.BussinesLibrary;
+using API.BussinesLogic;
 using API.Data;
 using Microsoft.AspNetCore.Mvc;
-using API.Data;
 
 namespace API.Controllers;
 
 [Route("api/person")]
 [ApiController]
-
-
-public class PersonController : ControllerBase
+public class PersonController(IPersonRepository personRep) : ControllerBase
 {
-    private readonly IPersonRepository _PersonRep;
-    public PersonController(IPersonRepository person)
-    {
-        _PersonRep = person;
-    }
-
-
-    [HttpGet]
+    [HttpGet("list")]
     public IActionResult GetAll()
     {
-        var persons =  _PersonRep.GetAll();
+        var persons = personRep.GetAll();
         return Ok(persons);
-
     }
-    
-     [HttpGet]
-     [Route("{id}")]
+
+    [HttpGet("get/{id:int}")]
     public IActionResult GetById(int id)
-     {
-    
-         var person =  _PersonRep.GetPersonById(id);
-         return Ok(person);
-    
-    
-     }
-    
-    [HttpPost]
-     public IActionResult Create(Person person)
-     {
-    
-         _PersonRep.Create(person);
-        return Ok();
-    
-     }
-    
-     [HttpPut]
-     public  IActionResult Update(int id , Person person)
-     {
-    
-         var existperson =  _PersonRep.Update(id , person);
-    
-         if (existperson == null)
-         {
-             return NotFound();
-         }
-    
-         return Ok(id);
-     }
-    
-     
-     
-     
-     
-     
-     
-    
-     [HttpDelete]
-     [Route("{id}")]
-     public  IActionResult Delete(int id)
-     {
-         var person = _PersonRep.Delete(id);
-         if (person == null)
-         {
-    
+    {
+        var person = personRep.GetPersonById(id);
+        return Ok(person);
+    }
+
+    [HttpPost("create")]
+    public IActionResult Create(Person person)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        personRep.Create(person);
+        return Ok("Ba movafaghiat post anjam shod");
+    }
+
+    [HttpPut]
+    public IActionResult Update(int id, Person person)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var existperson = personRep.Update(id, person);
+
+        if (existperson == null)
+        {
             return NotFound();
-    
-       }
-    
-         return NoContent();
-    
-     }
-    
-    
-    
-    
-     
-     
-     
-     
-    
-    
+        }
+
+        return Ok(id);
+    }
+
+
+    [HttpDelete]
+    [Route("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var person = personRep.Delete(id);
+        if (person == null)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
 }

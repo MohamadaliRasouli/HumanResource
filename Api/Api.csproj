@@ -17,4 +17,8 @@
         <PackageReference Include="System.Diagnostics.Tools" Version="4.3.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+    </ItemGroup>
+
 </Project>
