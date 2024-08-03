@@ -1,32 +1,50 @@
-using API.Data;
-using BusinessLogic.DTOs;
+using HumanResource.BusinessLogic.Contract;
+using HumanResource.BusinessLogic.DTOs;
+using HumanResource.Data.Context;
+using HumanResource.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace API.BussinesLogic;
+namespace HumanResource.BusinessLogic.Services;
 
 public class PersonService(ApplicationDbContext context) : IPersonService
 {
-    public List<Person> GetAll()
+    public async Task<List<PersonListDto>> List(CancellationToken ct)
     {
-        var persons = context.Persons.AsQueryable();
+        var persons = await context.Persons
+            .AsTracking()
+            .Select(x => new PersonListDto
+            {
+                Id = x.PersonId,
+                Name = x.Name,
+                LastName = x.LastName,
+                NationalIdentity = x.NationalIdentity,
+                BirthDate = x.BirthDate
+            })
+            .ToListAsync(ct);
 
-        return persons.ToList();
+        return persons;
     }
 
-    public List<Person> GetAllAsync()
+    public async Task<GetPersonDto?> GetPersonById(int id, CancellationToken ct)
     {
-        throw new NotImplementedException();
-    }
-
-    public Person GetPersonById(int id)
-    {
-        var person = context.Persons.FirstOrDefault(p => p.PersonId == id);
+        var person = await context.Persons
+            .AsTracking()
+            .Select(x => new GetPersonDto
+            {
+                Id = x.PersonId,
+                Name = x.Name,
+                LastName = x.LastName,
+                 NationalIdentity = x.NationalIdentity,
+                BirthDate = x.BirthDate
+            })
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
 
         return person;
     }
 
-    public void Create(CreatePersonRequest request)
+    public async Task Create(CreatePersonRequest request, CancellationToken ct)
     {
-        context.Persons.Add(new Person
+        await context.Persons.AddAsync(new Person
         {
             Name = request.Name,
             LastName = request.LastName,
@@ -36,9 +54,9 @@ public class PersonService(ApplicationDbContext context) : IPersonService
         context.SaveChanges();
     }
 
-    public Person Update(int id, Person person)
+    public async Task<Person> Update(int id, Person person, CancellationToken ct)
     {
-        var existedperson = context.Persons.Find(id);
+        var existedperson = await context.Persons.FindAsync(id);
 
         if (existedperson == null)
         {
@@ -50,14 +68,14 @@ public class PersonService(ApplicationDbContext context) : IPersonService
         existedperson.BirthDate = person.BirthDate;
         existedperson.NationalIdentity = person.NationalIdentity;
         context.Update(existedperson);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
 
         return person;
     }
 
-    public Person Delete(int id)
+    public async Task<Person> Delete(int id, CancellationToken ct)
     {
-        var person = context.Persons.FirstOrDefault(p => p.PersonId == id);
+        var person = await context.Persons.FirstOrDefaultAsync(p => p.PersonId == id);
 
         if (person == null)
         {

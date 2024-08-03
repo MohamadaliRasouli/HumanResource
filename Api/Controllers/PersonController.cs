@@ -1,44 +1,49 @@
-using API.BussinesLogic;
-using API.Data;
+using HumanResource.Api.Models.Person;
+using HumanResource.BusinessLogic.Contract;
+using HumanResource.BusinessLogic.DTOs;
+using HumanResource.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers;
+namespace HumanResource.Api.Controllers;
 
 [Route("api/person")]
 [ApiController]
-public class PersonController(IPersonRepository personRep) : ControllerBase
+public class PersonController(IPersonService personRep) : ControllerBase
 {
     [HttpGet("list")]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        var persons = personRep.GetAll();
+        var persons =await personRep.List(ct);
         return Ok(persons);
     }
-
+ 
     [HttpGet("get/{id:int}")]
-    public IActionResult GetById(int id)
+    public async Task<IActionResult> GetById(int id,CancellationToken ct)
     {
-        var person = personRep.GetPersonById(id);
+        var person =await personRep.GetPersonById(id,ct);
         return Ok(person);
     }
 
     [HttpPost("create")]
-    public IActionResult Create(Person person)
+    public async Task<IActionResult> Create(CreatePersonModel model,CancellationToken ct)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-        personRep.Create(person);
+        await personRep.Create(new CreatePersonRequest
+        {
+            Name = model.Name,
+            LastName = model.LastName,
+            NationalIdentity = model.NationalIdentity,
+            BirthDate = model.BirthDate
+        },ct);
         return Ok("Ba movafaghiat post anjam shod");
     }
 
     [HttpPut]
-    public IActionResult Update(int id, Person person)
+    public async Task<IActionResult> Update(int id, Person person, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var existperson = personRep.Update(id, person);
+        var existperson =await personRep.Update(id, person,ct);
 
         if (existperson == null)
         {
@@ -48,12 +53,11 @@ public class PersonController(IPersonRepository personRep) : ControllerBase
         return Ok(id);
     }
 
-
     [HttpDelete]
-    [Route("{id}")]
-    public IActionResult Delete(int id)
+    [Route("delete/{id:int}")]
+    public async Task<IActionResult> Delete(int id,CancellationToken ct)
     {
-        var person = personRep.Delete(id);
+        var person =await personRep.Delete(id,ct);
         if (person == null)
         {
             return NotFound();

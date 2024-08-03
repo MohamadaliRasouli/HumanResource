@@ -1,16 +1,13 @@
-using API.Data;
-using BusinessLogic.DTOs;
+using HumanResource.BusinessLogic.DTOs;
+using HumanResource.Data.Entities;
 
-namespace API.BussinesLogic;
+namespace HumanResource.BusinessLogic.Contract;
 
 public interface IPersonService
 {
-    List<Person> GetAll();
-    Person GetPersonById(int id);
-
-    void Create(CreatePersonRequest person);
-
-    Person Update(int id, Person person);
-
-    Person Delete(int id);
+    Task<List<PersonListDto>> List(CancellationToken ct);
+    Task<GetPersonDto?> GetPersonById(int id, CancellationToken ct);
+    Task Create(CreatePersonRequest person, CancellationToken ct);
+    Task<Person?> Update(int id, Person person, CancellationToken ct);
+    Task<Person?> Delete(int id, CancellationToken ct);
 }

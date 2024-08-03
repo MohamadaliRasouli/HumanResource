@@ -1,5 +1,6 @@
-using API.BussinesLogic;
-using API.Data;
+using HumanResource.BusinessLogic.Contract;
+using HumanResource.BusinessLogic.Services;
+using HumanResource.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -15,7 +16,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt =>
 {
     opt.UseSqlServer(builder.Configuration.GetConnectionString("App"));
 });
-builder.Services.AddScoped<IPersonRepository , PersonRepository>();
+builder.Services.AddScoped<IPersonService , PersonService>();
 
 var app = builder.Build();
 

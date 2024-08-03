@@ -1,11 +1,7 @@
-using System.Text.Json.Serialization;
-
-namespace API.Data;
+namespace HumanResource.Data.Entities;
 
 public class Person
 {
-    
-    [JsonIgnore]
     public int PersonId { get; set; }
 
     public string Name { get; set; }
@@ -15,5 +11,7 @@ public class Person
     public string NationalIdentity { get; set; }
 
     public DateTime BirthDate { get; set; }
+
+   
     
 }
