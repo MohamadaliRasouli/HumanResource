@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HumanResource.Api.Models.person;
 
 public partial class CreatePersonModel
 {
+    [Required(ErrorMessage = "نام کاربری رو وارد کنید ")]
+    [Display(Name = "نام")]
+    public required string Name { get; set; }
 
-    public string Name { get; set; } = null!;
+    public required string LastName { get; set; }
 
-    public string LastName { get; set; } = null!;
-
-    public string NationalIdentity { get; set; } = null!;
+    public string NationalIdentity { get; set; }
 
     public DateTime BirthDate { get; set; }
 

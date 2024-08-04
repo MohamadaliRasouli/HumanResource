@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Http;
+
 namespace HumanResource.BusinessLogic.DTOs;
 
-public class UpdatePersonRequest
+public class UpdatePersonRequestDto
 {
     public required string Name { get; set; }
 
@@ -10,6 +12,6 @@ public class UpdatePersonRequest
 
     public required DateTime BirthDate { get; set; }
     
-    public byte[] Photo { get; set; } = null!;
+    public IFormFile Photo { get; set; } = null!;
     
 }

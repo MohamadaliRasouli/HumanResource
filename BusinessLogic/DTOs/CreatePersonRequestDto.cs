@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace HumanResource.BusinessLogic.DTOs;
 
-public class CreatePersonRequest
+public class CreatePersonRequestDto
 {
     public string Name { get; set; } = null!;
 

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using HumanResource.Data.Entities;
 
-namespace HumanResource.Data.Entities;
+namespace HumanResource.Data.Database;
 
 public partial class Phone
 {
@@ -12,5 +11,5 @@ public partial class Phone
 
     public string PhoneNumber { get; set; } = null!;
 
-    public virtual Person CreatePersonModel { get; set; } = null!;
+    public virtual Person Person { get; set; } = null!;
 }

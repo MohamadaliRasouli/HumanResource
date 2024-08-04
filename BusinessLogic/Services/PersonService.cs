@@ -1,7 +1,6 @@
 using HumanResource.BusinessLogic.Contract;
 using HumanResource.BusinessLogic.DTOs;
-using HumanResource.Data.Context;
-using HumanResource.Data.Entities;
+using HumanResource.Data.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace HumanResource.BusinessLogic.Services;
@@ -42,58 +41,62 @@ public class PersonService(TestDbContext context) : IPersonService
         return person;
     }
 
-    public async Task Create(CreatePersonRequest request, CancellationToken ct)
+    public async Task Create(CreatePersonRequestDto requestDto, CancellationToken ct)
     {
 
         byte[] photoData;
         using (var memoryStream = new MemoryStream())
         {
-            await request.Photo.CopyToAsync(memoryStream);
+            await requestDto.Photo.CopyToAsync(memoryStream);
             photoData = memoryStream.ToArray();
         }
         
         
         await context.Persons.AddAsync(new Person
         {
-            Name = request.Name,
-            LastName = request.LastName,
-            NationalIdentity = request.NationalIdentity,
-            BirthDate = request.BirthDate,
+            Name = requestDto.Name,
+            LastName = requestDto.LastName,
+            NationalIdentity = requestDto.NationalIdentity,
+            BirthDate = requestDto.BirthDate,
             Photo = photoData
         } , ct);
-        await  context.SaveChangesAsync();
+        await  context.SaveChangesAsync(ct);
     }
 
-    public async Task<Person> Update(int id, UpdatePersonRequest request, CancellationToken ct)
+    public async Task<Person?> Update(int id, UpdatePersonRequestDto requestDto, CancellationToken ct)
     {
-        var person =  context.Persons.AsTracking().SingleOrDefault(p => p.PersonId == id);
+        
+      
+        var person =  context.Persons.SingleOrDefault(p => p.PersonId == id);
 
         if (person == null)
         {
             return null;
         }
         
+        byte[] photoData;
+        using (var memoryStream = new MemoryStream())
+        {
+            await requestDto.Photo.CopyToAsync(memoryStream , ct);
+            photoData = memoryStream.ToArray();
+        }
 
-         context.Persons.Update(new Person
-         {
-             PersonId = person.PersonId,
-             Name = request.Name,
-             LastName = request.LastName,
-             NationalIdentity = request.NationalIdentity,
-             BirthDate = request.BirthDate,
-             Photo = request.Photo
-             
-             
-         });
+        person.Name = requestDto.Name;
+        person.LastName = requestDto.LastName;
+        person.NationalIdentity = requestDto.NationalIdentity;
+        person.BirthDate = requestDto.BirthDate;
+        person.Photo = photoData;
+        context.Persons.Update(person);
+        
 
-        await  context.SaveChangesAsync();
-            
-            
+        await  context.SaveChangesAsync(ct);
+
+
 
         return person;
     }
 
-    public async Task<Person> Delete(int id, CancellationToken ct)
+    public async Task<Person?> Delete(int id, CancellationToken ct)
     {
         var person = await context.Persons.AsTracking().FirstOrDefaultAsync(p => p.PersonId == id , ct);
 
@@ -103,7 +106,7 @@ public class PersonService(TestDbContext context) : IPersonService
         }
 
         context.Persons.Remove(person);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(ct);
 
         return person;
     }

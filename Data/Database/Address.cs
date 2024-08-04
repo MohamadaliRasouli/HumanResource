@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using HumanResource.Data.Entities;
 
-namespace HumanResource.Data.Entities;
+namespace HumanResource.Data.Database;
 
-public  class Address
+public partial class Address
 {
     public int AddressId { get; set; }
 
@@ -12,5 +11,5 @@ public  class Address
 
     public string? Address1 { get; set; }
 
-    public virtual Person CreatePersonModel { get; set; } = null!;
+    public virtual Person Person { get; set; } = null!;
 }

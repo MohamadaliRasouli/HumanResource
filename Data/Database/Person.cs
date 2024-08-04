@@ -1,8 +1,9 @@
+﻿using System;
+using System.Collections.Generic;
 
+namespace HumanResource.Data.Database;
 
-namespace HumanResource.Data.Entities;
-
-public class Person
+public partial class Person
 {
     public int PersonId { get; set; }
 
@@ -14,11 +15,9 @@ public class Person
 
     public DateTime BirthDate { get; set; }
 
-    public byte[] Photo { get; set; } = null!;
+    public byte[]? Photo { get; set; }
 
     public virtual ICollection<Address> Addresses { get; set; } = new List<Address>();
 
     public virtual ICollection<Phone> Phones { get; set; } = new List<Phone>();
-   
-    
 }
