@@ -1,12 +1,20 @@
-namespace HumanResource.Api.Models.Person;
+﻿using System;
+using System.Collections.Generic;
 
-public class CreatePersonModel
+namespace HumanResource.Api.Models.person;
+
+public partial class CreatePersonModel
 {
-    public required string Name { get; set; }
 
-    public required string LastName { get; set; }
+    public string Name { get; set; } = null!;
 
-    public required string NationalIdentity { get; set; }
+    public string LastName { get; set; } = null!;
+
+    public string NationalIdentity { get; set; } = null!;
 
     public DateTime BirthDate { get; set; }
+
+    public IFormFile Photo { get; set; } = null!;
+
+   
 }

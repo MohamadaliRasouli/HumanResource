@@ -1,12 +1,17 @@
+using Microsoft.AspNetCore.Http;
+
 namespace HumanResource.BusinessLogic.DTOs;
 
 public class CreatePersonRequest
 {
-    public required string Name { get; set; }
+    public string Name { get; set; } = null!;
 
-    public required string LastName { get; set; }
+    public string LastName { get; set; } = null!;
 
-    public required string NationalIdentity { get; set; }
+    public string NationalIdentity { get; set; } = null!;
 
-    public required DateTime BirthDate { get; set; }
+    public DateTime BirthDate { get; set; }
+
+    public IFormFile Photo { get; set; } = null!;
+    
 }

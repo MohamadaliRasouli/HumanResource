@@ -9,4 +9,7 @@ public class UpdatePersonRequest
     public required string NationalIdentity { get; set; }
 
     public required DateTime BirthDate { get; set; }
+    
+    public byte[] Photo { get; set; } = null!;
+    
 }

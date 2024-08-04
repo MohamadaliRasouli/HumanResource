@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HumanResource.BusinessLogic.Services;
 
-public class PersonService(ApplicationDbContext context) : IPersonService
+public class PersonService(TestDbContext context) : IPersonService
 {
     public async Task<List<PersonListDto>> List(CancellationToken ct)
     {
         var persons = await context.Persons
-            .AsTracking()
+            .AsNoTracking()
             .Select(x => new PersonListDto
             {
                 Id = x.PersonId,
@@ -28,7 +28,7 @@ public class PersonService(ApplicationDbContext context) : IPersonService
     public async Task<GetPersonDto?> GetPersonById(int id, CancellationToken ct)
     {
         var person = await context.Persons
-            .AsTracking()
+            .AsNoTracking()
             .Select(x => new GetPersonDto
             {
                 Id = x.PersonId,
@@ -44,30 +44,47 @@ public class PersonService(ApplicationDbContext context) : IPersonService
 
     public async Task Create(CreatePersonRequest request, CancellationToken ct)
     {
+
+        byte[] photoData;
+        using (var memoryStream = new MemoryStream())
+        {
+            await request.Photo.CopyToAsync(memoryStream);
+            photoData = memoryStream.ToArray();
+        }
+        
+        
         await context.Persons.AddAsync(new Person
         {
             Name = request.Name,
             LastName = request.LastName,
             NationalIdentity = request.NationalIdentity,
             BirthDate = request.BirthDate,
-        });
-        context.SaveChanges();
+            Photo = photoData
+        } , ct);
+        await  context.SaveChangesAsync();
     }
 
     public async Task<Person> Update(int id, UpdatePersonRequest request, CancellationToken ct)
     {
-        var person = await context.Persons.FindAsync(id , ct);
+        var person =  context.Persons.AsTracking().SingleOrDefault(p => p.PersonId == id);
 
-     
-
-         context.Persons.Update(new Person 
+        if (person == null)
         {
-         Name = request.Name,
-         LastName = request.LastName,
-         NationalIdentity = request.NationalIdentity ,
-         BirthDate = request.BirthDate
-         
-        });
+            return null;
+        }
+        
+
+         context.Persons.Update(new Person
+         {
+             PersonId = person.PersonId,
+             Name = request.Name,
+             LastName = request.LastName,
+             NationalIdentity = request.NationalIdentity,
+             BirthDate = request.BirthDate,
+             Photo = request.Photo
+             
+             
+         });
 
         await  context.SaveChangesAsync();
             
@@ -78,7 +95,7 @@ public class PersonService(ApplicationDbContext context) : IPersonService
 
     public async Task<Person> Delete(int id, CancellationToken ct)
     {
-        var person = await context.Persons.FirstOrDefaultAsync(p => p.PersonId == id , ct);
+        var person = await context.Persons.AsTracking().FirstOrDefaultAsync(p => p.PersonId == id , ct);
 
         if (person == null)
         {

@@ -1,4 +1,6 @@
-using HumanResource.Api.Models.Person;
+
+using System.Text;
+using HumanResource.Api.Models.person;
 using HumanResource.BusinessLogic.Contract;
 using HumanResource.BusinessLogic.DTOs;
 using HumanResource.Data.Entities;
@@ -25,14 +27,16 @@ public class PersonController(IPersonService personRep) : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> Create(CreatePersonModel model,CancellationToken ct)
+    public async Task<IActionResult> Create([FromForm] CreatePersonModel model,CancellationToken ct)
     {
         await personRep.Create(new CreatePersonRequest
         {
             Name = model.Name,
             LastName = model.LastName,
             NationalIdentity = model.NationalIdentity,
-            BirthDate = model.BirthDate
+            BirthDate = model.BirthDate,
+            Photo = model.Photo
+            
         },ct);
         return Ok("Ba movafaghiat post anjam shod");
     }
