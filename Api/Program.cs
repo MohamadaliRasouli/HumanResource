@@ -38,6 +38,7 @@ builder.Services.AddAuthentication(options =>
         };
     });
 builder.Services.AddScoped<IPersonService , PersonService>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 
 var app = builder.Build();
 

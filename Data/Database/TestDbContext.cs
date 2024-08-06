@@ -34,9 +34,7 @@ public partial class TestDbContext : DbContext
             entity.HasKey(e => e.AddressId).HasName("Addresses_pk");
 
             entity.Property(e => e.AddressId).ValueGeneratedNever();
-            entity.Property(e => e.Address1)
-                .HasMaxLength(1)
-                .HasColumnName("Address");
+            entity.Property(e => e.Address1).HasColumnName("Address");
 
             entity.HasOne(d => d.Person).WithMany(p => p.Addresses)
                 .HasForeignKey(d => d.PersonId)
@@ -59,9 +57,6 @@ public partial class TestDbContext : DbContext
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Users_pk");
-
-            entity.Property(e => e.PasswordHash).HasMaxLength(1);
-            entity.Property(e => e.Username).HasMaxLength(1);
         });
 
         OnModelCreatingPartial(modelBuilder);

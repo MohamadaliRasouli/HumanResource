@@ -33,7 +33,7 @@ public class PersonService(TestDbContext context) : IPersonService
                 Id = x.PersonId,
                 Name = x.Name,
                 LastName = x.LastName,
-                 NationalIdentity = x.NationalIdentity,
+                NationalIdentity = x.NationalIdentity,
                 BirthDate = x.BirthDate
             })
             .FirstOrDefaultAsync(p => p.Id == id, ct);
@@ -43,15 +43,14 @@ public class PersonService(TestDbContext context) : IPersonService
 
     public async Task Create(CreatePersonRequestDto requestDto, CancellationToken ct)
     {
-
         byte[] photoData;
         using (var memoryStream = new MemoryStream())
         {
             await requestDto.Photo.CopyToAsync(memoryStream);
             photoData = memoryStream.ToArray();
         }
-        
-        
+
+
         await context.Persons.AddAsync(new Person
         {
             Name = requestDto.Name,
@@ -59,25 +58,23 @@ public class PersonService(TestDbContext context) : IPersonService
             NationalIdentity = requestDto.NationalIdentity,
             BirthDate = requestDto.BirthDate,
             Photo = photoData
-        } , ct);
-        await  context.SaveChangesAsync(ct);
+        }, ct);
+        await context.SaveChangesAsync(ct);
     }
 
     public async Task<Person?> Update(int id, UpdatePersonRequestDto requestDto, CancellationToken ct)
     {
-        
-      
-        var person =  context.Persons.SingleOrDefault(p => p.PersonId == id);
+        var person = context.Persons.SingleOrDefault(p => p.PersonId == id);
 
         if (person == null)
         {
             return null;
         }
-        
+
         byte[] photoData;
         using (var memoryStream = new MemoryStream())
         {
-            await requestDto.Photo.CopyToAsync(memoryStream , ct);
+            await requestDto.Photo.CopyToAsync(memoryStream, ct);
             photoData = memoryStream.ToArray();
         }
 
@@ -87,10 +84,9 @@ public class PersonService(TestDbContext context) : IPersonService
         person.BirthDate = requestDto.BirthDate;
         person.Photo = photoData;
         context.Persons.Update(person);
-        
 
-        await  context.SaveChangesAsync(ct);
 
+        await context.SaveChangesAsync(ct);
 
 
         return person;
@@ -98,7 +94,7 @@ public class PersonService(TestDbContext context) : IPersonService
 
     public async Task<Person?> Delete(int id, CancellationToken ct)
     {
-        var person = await context.Persons.AsTracking().FirstOrDefaultAsync(p => p.PersonId == id , ct);
+        var person = await context.Persons.AsTracking().FirstOrDefaultAsync(p => p.PersonId == id, ct);
 
         if (person == null)
         {

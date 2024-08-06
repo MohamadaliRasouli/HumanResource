@@ -11,5 +11,9 @@ public partial class Address
 
     public string? Address1 { get; set; }
 
+    public int PostalCode { get; set; }
+
+    public string? StreetName { get; set; } = null!;
+
     public virtual Person Person { get; set; } = null!;
 }

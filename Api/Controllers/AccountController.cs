@@ -36,7 +36,7 @@ public class AccountController : ControllerBase
         var user = new User
         {
             Username = request.Username,
-            PasswordHash = HashingHelper.ComputeMd5Hash(request.Password)
+            Password = HashingHelper.ComputeMd5Hash(request.Password)
         };
 
         _context.Users.Add(user);
@@ -50,13 +50,13 @@ public class AccountController : ControllerBase
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
 
-        if (user == null || user.PasswordHash != HashingHelper.ComputeMd5Hash(request.Password))
+        if (user == null || user.Password != HashingHelper.ComputeMd5Hash(request.Password))
         {
             return Unauthorized("Invalid credentials.");
         }
 
         var token = GenerateJwtToken(user);
-        return Ok(new { token });
+        return Ok(  new { token });
     }
 
     private string GenerateJwtToken(User user)
@@ -67,16 +67,20 @@ public class AccountController : ControllerBase
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var signingCredentials = new SigningCredentials(
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])), SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:ExpireMinutes"])),
-            signingCredentials: creds);
+            expires: DateTime.Now.AddMinutes(int.Parse(_configuration["Jwt:ExpireMinutes"])),
+            signingCredentials: signingCredentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
+
+
+
+
